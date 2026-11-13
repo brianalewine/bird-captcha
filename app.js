@@ -7,7 +7,7 @@ const grid = el('grid');
 const anchor = el('anchor');
 const names = [...new Set(photos.map(photo => photo.species))];
 const headphones = el('mode').innerHTML;
-const imageIcon = '<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zm2 2v12l5-6 4 4 2-3 3 4V5z"/></svg>';
+const imageIcon = '<svg viewBox="0 0 24 24"><path d="M12 5c-5 0-9.27 3.1-11 7 1.73 3.9 6 7 11 7s9.27-3.1 11-7c-1.73-3.9-6-7-11-7zm0 11.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>';
 let audioMode = false;
 let target;
 let tiles = [];
@@ -29,17 +29,27 @@ function feedback(message = '') {
 }
 function position() {
   if (!panel.open) return;
-  const rect = anchor.closest('.widget').getBoundingClientRect();
-  const width = panel.offsetWidth;
-  const beside = rect.right + width + 16 <= innerWidth;
-  const left = beside ? rect.right + 8 : (innerWidth - width) / 2;
-  const top = beside ? rect.top - 16 : (innerHeight - panel.offsetHeight) / 2;
-  panel.style.left = Math.max(6, left) + 'px';
-  panel.style.top = Math.max(6, Math.min(innerHeight - panel.offsetHeight - 6, top)) + 'px';
+  const square = anchor.querySelector('.box').getBoundingClientRect();
+  const centerY = square.top + square.height / 2;
+  const gap = 10;
+  const margin = 6;
+  const available = innerWidth - square.right - gap - margin;
+  panel.style.maxWidth = available >= 240 ? available + 'px' : 'none';
+  const rightEdge = innerWidth - panel.offsetWidth - margin;
+  const beside = available >= 240;
+  const left = beside ? square.right + gap : Math.max(margin, rightEdge);
+  const top = Math.max(margin, Math.min(centerY - panel.offsetHeight / 2, innerHeight - panel.offsetHeight - margin));
+  panel.style.left = left + 'px';
+  panel.style.top = top + 'px';
+  panel.classList.toggle('beside', beside);
+  panel.style.setProperty('--pointer-y', (centerY - top) + 'px');
 }
 function stopCall() {
   if (player) {
+    player.onerror = null;
     player.pause();
+    player.removeAttribute('src');
+    player.load();
     player = null;
   }
 }
@@ -48,7 +58,6 @@ function playCall() {
   current.currentTime = 0;
   current.play().then(() => {
     if (player === current) {
-      el('play').textContent = '↻  Replay';
       feedback();
     }
   }).catch(() => {
@@ -56,7 +65,7 @@ function playCall() {
   });
 }
 function photoRound() {
-  target = firstRound ? 'American Robin' : shuffled(names.filter(name => name !== target))[0];
+  target = shuffled(names.filter(name => name !== target))[0];
   const count = firstRound ? 2 : (Math.random() < .2 ? 0 : 1 + Math.floor(Math.random() * 3));
   firstRound = false;
   const matches = shuffled(photos.filter(photo => photo.species === target)).slice(0, count);
@@ -99,17 +108,17 @@ function round(message = '') {
   feedback(message);
   grid.hidden = audioMode;
   el('sound').hidden = !audioMode;
+  el('photo-prompt').hidden = audioMode;
+  panel.classList.toggle('audio', audioMode);
+  panel.setAttribute('aria-labelledby', audioMode ? 'audio-prompt' : 'target');
   el('mode').innerHTML = audioMode ? imageIcon : headphones;
   el('mode').title = audioMode ? 'Get an image challenge' : 'Get an audio challenge';
   el('mode').setAttribute('aria-label', el('mode').title);
   if (audioMode) {
     recording = shuffled(calls.filter(call => call !== recording))[0];
     player = new Audio(recording.src);
-    el('prompt').textContent = 'Listen to the recording and';
-    el('target').textContent = 'identify the bird';
-    el('hint').textContent = 'Type its name below.';
+    player.onerror = () => feedback('This recording could not load. Use reload to try another bird.');
     el('answer').value = '';
-    el('play').textContent = '▶  Play';
     el('submit').textContent = 'Verify';
   } else {
     photoRound();
@@ -131,7 +140,7 @@ el('mode').onclick = () => {
   if (audioMode) playCall();
 };
 el('play').onclick = playCall;
-const normalize = value => value.toLowerCase().replace(/[^a-z]/g, '');
+const normalize = value => value.normalize('NFD').toLowerCase().replace(/[^a-z]/g, '');
 function verify() {
   if (!audioMode && grid.querySelector(':disabled, [aria-busy=true]')) {
     feedback(grid.querySelector(':disabled') ? 'A photo could not load. Reload the challenge or try audio.' : 'Please wait for the photos to load.');

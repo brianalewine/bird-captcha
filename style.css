@@ -16,7 +16,10 @@ button,input {font:inherit}button {cursor:pointer}button:focus-visible,a:focus-v
 .brand button:hover {text-decoration:underline}
 dialog {color:#222;background:#fff}
 dialog::backdrop {background:transparent}
-#challenge {margin:0;position:fixed;width:min(402px,calc(100vw - 12px));max-width:none;max-height:calc(100dvh - 12px);padding:6px 6px 0;border:1px solid #ccc;box-shadow:0 2px 8px #0005;overflow:auto}
+#challenge {margin:0;position:fixed;width:min(402px,calc(100vw - 12px));max-width:none;max-height:calc(100dvh - 12px);padding:0;border:1px solid #ccc;box-shadow:0 2px 8px #0005;overflow:visible}
+.challenge-content {max-height:calc(100dvh - 14px);overflow:auto;padding:6px 6px 0}
+.audio .challenge-content {padding:0}
+#challenge.beside::before {content:'';position:absolute;z-index:1;left:-8px;top:var(--pointer-y);width:14px;height:14px;background:white;border-left:1px solid #ccc;border-bottom:1px solid #ccc;transform:translateY(-50%) rotate(45deg);pointer-events:none}
 header {background:#1a73e8;color:white;min-height:114px;padding:21px 24px 16px;font-size:16px}
 h1 {outline:none;font-weight:900;font-size:28px;line-height:1.12;margin:3px 0 8px;color:white}
 #hint {font-size:14px}
@@ -27,13 +30,23 @@ h1 {outline:none;font-weight:900;font-size:28px;line-height:1.12;margin:3px 0 8p
 .tile[aria-pressed=true]:after {content:'✓';position:absolute;top:3px;left:3px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1a73e8;color:white;font-weight:bold;font-size:16px}
 footer {border-top:1px solid #ddd;display:flex;align-items:center;gap:2px;padding:9px 6px;margin:0 -6px;min-height:59px}
 .icon {color:#777;border:0;background:transparent;width:36px;height:36px;padding:7px}.icon:hover {color:#333}
-.icon svg {width:22px;height:22px;fill:currentColor}
-#reload {font:30px/1 Arial;padding:0}
-#submit,#play,#about form button {color:white;background:#1a73e8;border:0;border-radius:2px;text-transform:uppercase;font-weight:500;padding:0 20px;min-height:40px}
+.icon svg {width:24px;height:24px;fill:currentColor}
+#submit,#about form button {color:white;background:#1a73e8;border:0;border-radius:2px;text-transform:uppercase;font-weight:500;padding:0 20px;min-height:40px}
 #submit {margin-left:auto;min-width:100px;min-height:42px}
-#submit:hover,#play:hover {background:#397dc9}
-#sound {padding:24px 16px;display:grid;gap:16px}#play {justify-self:center}
-#answer {width:100%;padding:10px;border:1px solid #aaa}
+#submit:hover {background:#397dc9}
+#challenge.audio {width:min(302px,calc(100vw - 12px));padding:0}
+#sound {display:grid;gap:12px;padding:16px 21px 30px}
+#audio-prompt {font-size:16px;line-height:1.25;color:#222}
+#play,#answer {width:100%;height:42px;border:1px solid #d3d3d3;border-radius:2px;font-size:16px}
+#play {background:#ddd;color:#111;text-transform:uppercase;font-weight:500}
+#play:hover {background:#d4d4d4}
+#play:focus {outline:3px solid #1b5bab;outline-offset:0}
+#answer {padding:6px 9px;min-width:0}
+#challenge.audio footer {margin:0;padding:8px;gap:2px}
+#challenge.audio .icon {width:clamp(30px,12vw,48px);padding:6px}
+#challenge.audio .icon svg {width:27px;height:27px}
+#challenge.audio #submit {background:#4a90df;font-weight:500}
+#challenge.audio #submit:hover {background:#347dcf}
 #feedback,#help {margin:5px 0;padding:6px;text-align:center;font-size:14px}#feedback {color:#b3261e}
 #about {width:min(350px,95vw);border:1px solid #ccc;padding:24px;box-shadow:0 2px 8px #0004}#about h2 {margin:0}#about p {line-height:1.5}a {color:#256bc0}
 [hidden] {display:none!important}
