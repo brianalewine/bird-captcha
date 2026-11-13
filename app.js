@@ -162,6 +162,21 @@ el('info').onclick = () => {
   el('info').setAttribute('aria-expanded', !help.hidden);
 };
 panel.addEventListener('close', stopCall);
+el('reset').onclick = () => {
+  if (panel.open) panel.close();
+  stopCall();
+  firstRound = true;
+  audioMode = false;
+  target = undefined;
+  recording = null;
+  tiles = [];
+  grid.replaceChildren();
+  el('answer').value = '';
+  feedback();
+  anchor.setAttribute('aria-checked', 'false');
+  el('status').textContent = 'BIRDCHA reset.';
+  anchor.focus();
+};
 el('credits').onclick = () => el('about').showModal();
 for (const dialog of document.querySelectorAll('dialog')) {
   dialog.addEventListener('click', event => {
