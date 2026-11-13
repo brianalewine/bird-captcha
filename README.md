@@ -10,6 +10,6 @@ Run `python3 -m http.server 8000` in this directory and open [localhost:8000](ht
 
 Select **Settings → Pages → Deploy from a branch**, choose **main** and **/ (root)**, then save.
 
-Both challenges draw from the 150 bird species with the most research-grade observations in iNaturalist’s North America region at the time the catalog was collected. This ranking reflects reporting frequency. Some photo rounds have no matching birds. The headphone button opens a smaller audio challenge and plays a field recording. Enter a common or scientific name to solve it. Click the checked box to play again.
+The photo challenge draws from the 150 bird species with the most research-grade observations in iNaturalist’s North America region at the time the catalog was collected. This ranking reflects reporting frequency. Some photo rounds have no matching birds. The headphone button opens a smaller audio challenge. Recordings only play when you click Play. Audio challenges use quality-rated recordings documented in AUDIO-CREDITS.md. Enter a common or scientific name to solve it. Click the checked box to play again.
 
 [Species ranking](SPECIES.md) · [Photo credits](PHOTO-CREDITS.md) · [Recording credits](AUDIO-CREDITS.md)

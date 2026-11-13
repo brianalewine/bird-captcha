@@ -54,6 +54,8 @@ footer {border-top:1px solid #ddd;display:flex;align-items:center;gap:2px;paddin
 #challenge.audio #submit {background:#4a90df;font-weight:500}
 #challenge.audio #submit:hover {background:#347dcf}
 #feedback,#help {margin:5px 0;padding:6px;text-align:center;font-size:14px}#feedback {color:#b3261e}
+#challenge.audio #sound {padding-bottom:12px}
+#challenge.audio #feedback {margin:0;padding:0 21px 12px;line-height:20px}
 #about {width:min(350px,95vw);border:1px solid #ccc;padding:24px;box-shadow:0 2px 8px #0004}#about h2 {margin:0}#about p {line-height:1.5}a {color:#256bc0}
 [hidden] {display:none!important}
 .sr {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}

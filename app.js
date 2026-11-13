@@ -147,7 +147,6 @@ el('reload').onclick = () => round();
 el('mode').onclick = () => {
   audioMode = !audioMode;
   round();
-  if (audioMode) playCall();
 };
 el('play').onclick = playCall;
 const normalize = value => value.normalize('NFD').toLowerCase().replace(/[^a-z]/g, '');
