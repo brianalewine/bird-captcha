@@ -14,6 +14,7 @@ let tiles = [];
 let recording;
 let player;
 let firstRound = true;
+let loadingTimer;
 
 function shuffled(items) {
   const copy = [...items];
@@ -127,11 +128,20 @@ function round(message = '') {
   el(audioMode ? 'play' : 'target').focus({preventScroll:true});
 }
 anchor.onclick = () => {
+  if (loadingTimer) return;
   anchor.setAttribute('aria-checked', 'false');
-  el('status').textContent = '';
+  anchor.setAttribute('aria-busy', 'true');
+  anchor.classList.add('loading');
+  el('status').textContent = 'Loading bird challenge.';
   audioMode = false;
-  panel.showModal();
-  round();
+  loadingTimer = setTimeout(() => {
+    loadingTimer = undefined;
+    anchor.classList.remove('loading');
+    anchor.removeAttribute('aria-busy');
+    el('status').textContent = '';
+    panel.showModal();
+    round();
+  }, 500);
 };
 el('reload').onclick = () => round();
 el('mode').onclick = () => {
@@ -172,6 +182,10 @@ el('info').onclick = () => {
 };
 panel.addEventListener('close', stopCall);
 el('reset').onclick = () => {
+  clearTimeout(loadingTimer);
+  loadingTimer = undefined;
+  anchor.classList.remove('loading');
+  anchor.removeAttribute('aria-busy');
   if (panel.open) panel.close();
   stopCall();
   firstRound = true;

@@ -7,10 +7,16 @@ button,input {font:inherit}button {cursor:pointer}button:focus-visible,a:focus-v
 #reset:hover {background:#f5f5f5}
 .widget {width:min(302px,96vw);height:76px;border:1px solid #d3d3d3;border-radius:3px;background:#f9f9f9;box-shadow:0 1px 4px #0002;display:flex;justify-content:space-between;align-items:center;padding:0 11px}
 #anchor {background:none;border:0;padding:0;display:flex;align-items:center;gap:12px;height:52px;color:#151515}
-.box {width:28px;height:28px;border:2px solid #c1c1c1;background:white;border-radius:2px;box-shadow:inset 0 1px 1px #0001}
+.box {position:relative;flex-shrink:0;width:28px;height:28px;border:2px solid #c1c1c1;background:white;border-radius:2px;box-shadow:inset 0 1px 1px #0001}
 #anchor:hover .box {border-color:#aaa}
+#anchor.loading .box {border-color:transparent;background:transparent;box-shadow:none}
+#anchor.loading .box:after {content:'';position:absolute;inset:-2px;border:3px solid #d2e3fc;border-top-color:#4285f4;border-right-color:#4285f4;border-radius:50%;animation:checkbox-spin .65s linear infinite}
+.checkmark {display:none;width:32px;height:32px;position:absolute;left:-2px;top:-4px;overflow:visible;fill:none;stroke:#00955b;stroke-width:3.5;stroke-linecap:square;stroke-linejoin:miter}
 #anchor[aria-checked=true] .box {background:transparent;border:0;box-shadow:none}
-#anchor[aria-checked=true] .box:after {content:'';display:block;width:12px;height:23px;border:solid #00955b;border-width:0 4px 4px 0;transform:translate(6px,-2px) rotate(42deg)}
+#anchor[aria-checked=true] .checkmark {display:block}
+#anchor[aria-checked=true] .checkmark path {stroke-dasharray:36;stroke-dashoffset:0;animation:checkbox-check .35s ease-out both}
+@keyframes checkbox-spin {to {transform:rotate(360deg)}}
+@keyframes checkbox-check {from {stroke-dashoffset:36}to {stroke-dashoffset:0}}
 .brand {display:grid;justify-items:center;gap:1px;color:#555;font-size:10px}
 .brand button {font-size:8px;color:#555;border:0;background:transparent;padding:2px}
 .brand button:hover {text-decoration:underline}
@@ -51,4 +57,4 @@ footer {border-top:1px solid #ddd;display:flex;align-items:center;gap:2px;paddin
 #about {width:min(350px,95vw);border:1px solid #ccc;padding:24px;box-shadow:0 2px 8px #0004}#about h2 {margin:0}#about p {line-height:1.5}a {color:#256bc0}
 [hidden] {display:none!important}
 .sr {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
-@media(prefers-reduced-motion:reduce){.tile img {transition:none}}
+@media(prefers-reduced-motion:reduce){.tile img {transition:none}#anchor.loading .box:after,#anchor[aria-checked=true] .checkmark path {animation:none}}
