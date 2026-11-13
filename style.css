@@ -1,0 +1,38 @@
+* {box-sizing:border-box}
+body {margin:0;font:14px Roboto,Arial,sans-serif;color:#202124;background:#fff}
+main {min-height:100vh;min-height:100svh;display:grid;place-items:center}
+button,input {font:inherit}button {cursor:pointer}button:focus-visible,a:focus-visible {outline:3px solid #174ea6;outline-offset:-3px}
+.widget {width:min(302px,96vw);height:76px;border:1px solid #d3d3d3;border-radius:3px;background:#f9f9f9;box-shadow:0 1px 4px #0002;display:flex;justify-content:space-between;align-items:center;padding:0 11px}
+#anchor {background:none;border:0;padding:0;display:flex;align-items:center;gap:12px;height:52px;color:#151515}
+.box {width:28px;height:28px;border:2px solid #c1c1c1;background:white;border-radius:2px;box-shadow:inset 0 1px 1px #0001}
+#anchor:hover .box {border-color:#aaa}
+#anchor[aria-checked=true] .box {background:transparent;border:0;box-shadow:none}
+#anchor[aria-checked=true] .box:after {content:'';display:block;width:12px;height:23px;border:solid #00955b;border-width:0 4px 4px 0;transform:translate(6px,-2px) rotate(42deg)}
+.brand {display:grid;justify-items:center;gap:1px;color:#555;font-size:10px}
+.brand button {font-size:8px;color:#555;border:0;background:transparent;padding:2px}
+.brand button:hover {text-decoration:underline}
+dialog {color:#222;background:#fff}
+dialog::backdrop {background:transparent}
+#challenge {margin:0;position:fixed;width:min(402px,calc(100vw - 12px));max-width:none;max-height:calc(100dvh - 12px);padding:6px 6px 0;border:1px solid #ccc;box-shadow:0 2px 8px #0005;overflow:auto}
+header {background:#1a73e8;color:white;min-height:114px;padding:21px 24px 16px;font-size:16px}
+h1 {outline:none;font-weight:900;font-size:28px;line-height:1.12;margin:3px 0 8px;color:white}
+#hint {font-size:14px}
+#grid {display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:6px 0}
+.tile {min-width:0;position:relative;background:white;border:0;aspect-ratio:1;padding:0}
+.tile img {display:block;width:100%;height:100%;object-fit:cover;transition:transform .13s}
+.tile[aria-pressed=true] img {transform:scale(.80)}
+.tile[aria-pressed=true]:after {content:'✓';position:absolute;top:3px;left:3px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1a73e8;color:white;font-weight:bold;font-size:16px}
+footer {border-top:1px solid #ddd;display:flex;align-items:center;gap:2px;padding:9px 6px;margin:0 -6px;min-height:59px}
+.icon {color:#777;border:0;background:transparent;width:36px;height:36px;padding:7px}.icon:hover {color:#333}
+.icon svg {width:22px;height:22px;fill:currentColor}
+#reload {font:30px/1 Arial;padding:0}
+#submit,#play,#about form button {color:white;background:#1a73e8;border:0;border-radius:2px;text-transform:uppercase;font-weight:500;padding:0 20px;min-height:40px}
+#submit {margin-left:auto;min-width:100px;min-height:42px}
+#submit:hover,#play:hover {background:#397dc9}
+#sound {padding:24px 16px;display:grid;gap:16px}#play {justify-self:center}
+#answer {width:100%;padding:10px;border:1px solid #aaa}
+#feedback,#help {margin:5px 0;padding:6px;text-align:center;font-size:14px}#feedback {color:#b3261e}
+#about {width:min(350px,95vw);border:1px solid #ccc;padding:24px;box-shadow:0 2px 8px #0004}#about h2 {margin:0}#about p {line-height:1.5}a {color:#256bc0}
+[hidden] {display:none!important}
+.sr {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(prefers-reduced-motion:reduce){.tile img {transition:none}}

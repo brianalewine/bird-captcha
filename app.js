@@ -1,0 +1,174 @@
+import { photos } from './photos.js';
+import { calls } from './audio.js';
+
+const el = id => document.getElementById(id);
+const panel = el('challenge');
+const grid = el('grid');
+const anchor = el('anchor');
+const names = [...new Set(photos.map(photo => photo.species))];
+const headphones = el('mode').innerHTML;
+const imageIcon = '<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zm2 2v12l5-6 4 4 2-3 3 4V5z"/></svg>';
+let audioMode = false;
+let target;
+let tiles = [];
+let recording;
+let player;
+let firstRound = true;
+
+function shuffled(items) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+function feedback(message = '') {
+  el('feedback').textContent = message;
+  el('feedback').hidden = !message;
+}
+function position() {
+  if (!panel.open) return;
+  const rect = anchor.closest('.widget').getBoundingClientRect();
+  const width = panel.offsetWidth;
+  const beside = rect.right + width + 16 <= innerWidth;
+  const left = beside ? rect.right + 8 : (innerWidth - width) / 2;
+  const top = beside ? rect.top - 16 : (innerHeight - panel.offsetHeight) / 2;
+  panel.style.left = Math.max(6, left) + 'px';
+  panel.style.top = Math.max(6, Math.min(innerHeight - panel.offsetHeight - 6, top)) + 'px';
+}
+function stopCall() {
+  if (player) {
+    player.pause();
+    player = null;
+  }
+}
+function playCall() {
+  const current = player;
+  current.currentTime = 0;
+  current.play().then(() => {
+    if (player === current) {
+      el('play').textContent = '↻  Replay';
+      feedback();
+    }
+  }).catch(() => {
+    if (player === current) feedback('Press Play to hear the recording, or reload for another bird.');
+  });
+}
+function photoRound() {
+  target = firstRound ? 'American Robin' : shuffled(names.filter(name => name !== target))[0];
+  const count = firstRound ? 2 : (Math.random() < .2 ? 0 : 1 + Math.floor(Math.random() * 3));
+  firstRound = false;
+  const matches = shuffled(photos.filter(photo => photo.species === target)).slice(0, count);
+  const distractors = shuffled(photos.filter(photo => photo.species !== target)).slice(0, 9 - matches.length);
+  tiles = shuffled([...matches, ...distractors]);
+  const article = /^[aeiou]/i.test(target) ? 'an' : 'a';
+  el('prompt').textContent = 'Select all squares containing';
+  el('target').textContent = article + ' ' + target.toLowerCase();
+  el('hint').textContent = 'If there are none, click skip.';
+  el('submit').textContent = 'Skip';
+  grid.replaceChildren(...tiles.map((photo, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'tile';
+    btn.setAttribute('aria-label', 'Square ' + (index + 1));
+    btn.setAttribute('aria-pressed', 'false');
+    const img = new Image();
+    img.alt = '';
+    img.onload = () => btn.removeAttribute('aria-busy');
+    img.onerror = () => {
+      btn.removeAttribute('aria-busy');
+      btn.disabled = true;
+      img.alt = 'Photo unavailable';
+      if (grid.contains(btn) && !audioMode) feedback('A photo could not load. Reload the challenge or try audio.');
+    };
+    btn.setAttribute('aria-busy', 'true');
+    img.src = photo.src;
+    btn.append(img);
+    btn.onclick = () => {
+      btn.setAttribute('aria-pressed', btn.getAttribute('aria-pressed') !== 'true');
+      el('submit').textContent = grid.querySelector('[aria-pressed=true]') ? 'Verify' : 'Skip';
+      feedback();
+    };
+    return btn;
+  }));
+}
+function round(message = '') {
+  stopCall();
+  el('help').hidden = true;
+  el('info').setAttribute('aria-expanded', 'false');
+  feedback(message);
+  grid.hidden = audioMode;
+  el('sound').hidden = !audioMode;
+  el('mode').innerHTML = audioMode ? imageIcon : headphones;
+  el('mode').title = audioMode ? 'Get an image challenge' : 'Get an audio challenge';
+  el('mode').setAttribute('aria-label', el('mode').title);
+  if (audioMode) {
+    recording = shuffled(calls.filter(call => call !== recording))[0];
+    player = new Audio(recording.src);
+    el('prompt').textContent = 'Listen to the recording and';
+    el('target').textContent = 'identify the bird';
+    el('hint').textContent = 'Type its name below.';
+    el('answer').value = '';
+    el('play').textContent = '▶  Play';
+    el('submit').textContent = 'Verify';
+  } else {
+    photoRound();
+  }
+  position();
+  el(audioMode ? 'play' : 'target').focus({preventScroll:true});
+}
+anchor.onclick = () => {
+  anchor.setAttribute('aria-checked', 'false');
+  el('status').textContent = '';
+  audioMode = false;
+  panel.showModal();
+  round();
+};
+el('reload').onclick = () => round();
+el('mode').onclick = () => {
+  audioMode = !audioMode;
+  round();
+  if (audioMode) playCall();
+};
+el('play').onclick = playCall;
+const normalize = value => value.toLowerCase().replace(/[^a-z]/g, '');
+function verify() {
+  if (!audioMode && grid.querySelector(':disabled, [aria-busy=true]')) {
+    feedback(grid.querySelector(':disabled') ? 'A photo could not load. Reload the challenge or try audio.' : 'Please wait for the photos to load.');
+    return;
+  }
+  if (audioMode && !el('answer').value.trim()) {
+    feedback('Enter a bird name first.');
+    el('answer').focus();
+    return;
+  }
+  const correct = audioMode
+    ? [recording.species, ...recording.aliases].some(name => normalize(name) === normalize(el('answer').value))
+    : tiles.every((photo, i) => (photo.species === target) === (grid.children[i].getAttribute('aria-pressed') === 'true'));
+  if (!correct) {
+    round('Please try again.');
+    return;
+  }
+  anchor.setAttribute('aria-checked', 'true');
+  el('status').textContent = 'Bird identified. Click the checkbox to play again.';
+  panel.close();
+}
+el('submit').onclick = verify;
+el('answer').onkeydown = event => { if (event.key === 'Enter') verify(); };
+el('info').onclick = () => {
+  const help = el('help');
+  help.textContent = audioMode ? 'Listen again with Play, type the bird’s name, then click Verify.' : 'Select each matching bird, then click Verify. Click Skip only when there are no matches.';
+  help.hidden = !help.hidden;
+  el('info').setAttribute('aria-expanded', !help.hidden);
+};
+panel.addEventListener('close', stopCall);
+el('credits').onclick = () => el('about').showModal();
+for (const dialog of document.querySelectorAll('dialog')) {
+  dialog.addEventListener('click', event => {
+    if (event.target !== dialog) return;
+    const box = dialog.getBoundingClientRect();
+    if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dialog.close();
+  });
+}
+new ResizeObserver(position).observe(panel);
+window.addEventListener('resize', position);
