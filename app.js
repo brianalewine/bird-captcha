@@ -172,7 +172,11 @@ function verify() {
   panel.close();
 }
 el('submit').onclick = verify;
-el('answer').onkeydown = event => { if (event.key === 'Enter') verify(); };
+el('answer').onkeydown = event => {
+  if (event.key !== 'Enter' || event.isComposing || event.repeat) return;
+  event.preventDefault();
+  verify();
+};
 el('info').onclick = () => {
   const help = el('help');
   help.textContent = audioMode ? 'Listen again with Play, type the bird’s name, then click Verify.' : 'Select each matching bird, then click Verify. Click Skip only when there are no matches.';
